@@ -1,0 +1,75 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.ComponentModel.DataAnnotations;
+
+namespace MvcApplication1.Models
+{
+    public class Registration
+    {
+        [Display(Name = "Enter Name")]
+        [Required(ErrorMessage = "Please enter Name")]
+        public string Name
+        {
+            get;
+            set;
+        }
+
+        [Display(Name = "Enter Email")]
+        [Required(ErrorMessage = "Please enter your email address")]
+        [RegularExpression(".+\\@.+\\..+", ErrorMessage = "Please enter a valid email address")]
+        public string Email
+        {
+            get;
+            set;
+        }
+
+
+        [Display(Name = "Enter Password")]
+        [Required(ErrorMessage = "Please enter Password")]
+        [StringLength(10, ErrorMessage = "The PASSWORD must be at least 6 characters long.", MinimumLength = 6)]
+        [DataType(DataType.Password)]
+        public string Password
+        {
+            get;
+            set;
+        }
+
+       
+        [Display(Name = "Confirm password")]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [DataType(DataType.Password)]
+        public string CPassword
+        {
+            get;
+            set;
+        }
+
+        public string Nic
+        {
+            get;
+            set;
+        }
+
+        public int Country
+        {
+            get;
+            set;
+        }
+
+        public int City
+        {
+            get;
+            set;
+        }
+
+        [Display(Name = "Enter Address")]
+        [Required(ErrorMessage = "Please enter ADDRESS")]
+        public string Address
+        {
+            get;
+            set;
+        }
+    }
+}
