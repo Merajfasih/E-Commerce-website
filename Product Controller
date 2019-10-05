@@ -1,0 +1,97 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using MvcApplication1.Models;
+using System.Data;
+using System.Data.SqlClient;
+using System.Configuration;
+
+namespace MvcApplication1.Controllers
+{
+    public class ProductController : Controller
+    {
+        //
+        // GET: /Product/
+
+        public ActionResult Index(string cat = "", string pname = "")
+        {
+            FillProduct(cat, pname);
+            return View();
+        }
+
+        public ActionResult CatList()
+        {
+            FillCat();
+            return View();
+        }
+
+        public void FillCat()
+        {
+            List<CatProduct> items = new List<CatProduct>();
+
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = ConfigurationManager.ConnectionStrings["NorthwindConnectionString"].ToString();
+            conn.Open();
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "SELECT * FROM CATPRODUCT";
+
+            SqlDataReader re = cmd.ExecuteReader();
+        
+            while(re.Read())
+            {
+                CatProduct A = new CatProduct();
+
+                A.catId = int.Parse(re["CategoryID"].ToString());
+                A.catName = re["CategoryName"].ToString();
+                A.noofProduct = int.Parse(re["noofProduct"].ToString());
+
+                items.Add(A);
+            }
+
+            ViewBag.CatList = items;
+        }
+
+        public void FillProduct(string cat,string pname)
+        {
+            List<Product> items = new List<Product>();
+            string PCAT = "%" + cat + "%";
+            string PNAME = "%" + pname + "%";
+
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = ConfigurationManager.ConnectionStrings["NorthwindConnectionString"].ToString();
+            conn.Open();
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+            cmd.CommandType = CommandType.Text;
+            //SQL INJECTION '"++"'
+            cmd.CommandText = "SELECT * FROM SEARCHPRODUCT where CategoryName like '"+PCAT+"'"+
+                              " AND ProductName like '" + PNAME + "'";
+
+            SqlDataReader re = cmd.ExecuteReader();
+
+            while (re.Read())
+            {
+                Product A = new Product();
+
+                A.catId = int.Parse(re["CategoryID"].ToString());
+                A.catName = re["CategoryName"].ToString();
+                A.supName = re["CompanyName"].ToString();
+                A.ProdName = re["ProductName"].ToString();
+                A.unitPrice = re["UnitPrice"].ToString();
+                A.Image = re["Image"].ToString();
+
+                items.Add(A);
+            }
+
+            ViewBag.ProductList = items;
+        }
+    
+    
+    }
+}
