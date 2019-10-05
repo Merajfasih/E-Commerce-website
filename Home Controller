@@ -1,0 +1,137 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using MvcAppliecomsite.Models;
+using System.Data;
+using System.Data.SqlClient;
+using System.Configuration;
+//for email
+using System.Net.Mail;
+using System.Net;
+
+namespace MvcAppliecomsite.Controllers
+{
+    public class HomeController : Controller
+    {
+        public ActionResult Index()
+        {
+            ViewBag.Message = "Modify this template to jump-start your ASP.NET MVC application.";
+
+            return View();
+        }
+
+        public ActionResult About()
+        {
+            ViewBag.Message = "Your app description page.";
+
+            return View();
+        }
+
+        public ActionResult ContactUs()
+        {
+            ViewBag.Message = "Your contact page.";
+
+            return View();
+        }
+        public ActionResult SendEmail(string name, string email, string subject,string message)
+        {
+            string strHtml = "";
+            string mail_email = "marig.fasho@gmail.com@gmail.com";
+            string mail_pass = "mmf1997$";
+            string mail_smtp = "smtp.gmail.com";
+            int mail_smtpport = 587;
+
+            /////////////////////////////////////////////////SMTP Settings///////////////////////
+            SmtpClient client = new SmtpClient(mail_smtp, mail_smtpport);
+
+            client.EnableSsl = true;
+
+            MailAddress from = new MailAddress(mail_email, "meraj_fasih");
+
+            MailAddress to = new MailAddress("marig.fasho@gmail.com@gmail.com", "Admin");
+
+            MailMessage message1 = new MailMessage(from, to);
+
+            message1.IsBodyHtml = true;
+
+            strHtml = "<div >" +
+                        "<center>" +
+                          "<font size='3'>" +
+                            "<b><u>Contact Us Information</u></b>" +
+                          "</font>" +
+                        "</center>" +
+
+                      "<br><br><br>" +
+
+                      "Dear " +
+
+                      "<br>" + message +
+
+                      "</li>" +
+                      "<br>Regards," + name +
+                      "<br>Email," + email +
+                      "<br><br>" +
+                        "<I>Please do not reply to this email. This is a computer generated message and hence requires no signature</I>" +
+                   "</div>";
+
+            message1.Body = strHtml;
+
+            message1.Subject = subject;
+
+            NetworkCredential myCreds = new NetworkCredential(mail_email, mail_pass, "");
+
+            client.Credentials = myCreds;
+            /////////////////////////////////////////////////////////////////////////////////////
+            try
+            {
+                client.Send(message1);
+                ViewBag.Message = "Your Feed back has been send plz check your email";
+
+
+            }
+
+            catch (Exception ex)
+            {
+
+            }
+
+            return RedirectToAction("ContactUs");
+        }
+
+
+        public ActionResult Faq()
+        {
+            ViewBag.Message = "Your contact page.";
+            FAQ1();
+            return View();
+        }
+        public void FAQ1()
+        {
+            List<Faq> items = new List<Faq>();
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = ConfigurationManager.ConnectionStrings["NorthwindConnectionString"].ToString();
+            conn.Open();
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "SELECT * FROM FAQ";
+
+            SqlDataReader re = cmd.ExecuteReader();
+
+            while (re.Read())
+            {
+                Faq A = new Faq();
+                A.Question = re["Q"].ToString();
+                A.Answer = re["A"].ToString();
+                items.Add(A);
+            }
+
+            ViewBag.FaqList = items;
+        }
+
+ 
+    }
+}
